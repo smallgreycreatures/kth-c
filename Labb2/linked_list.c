@@ -28,7 +28,7 @@ void create_big_int(BigInt *big_int, char str_buf[])
 		BigInt *big_int_tail = malloc(sizeof(BigInt));
 		big_int_temp->tail = big_int_tail;
 		//printf("a%d\n", big_int_temp->number);
-		
+
 		if (str_buf[i] == NULL)
 		{	
 			big_int_tail = NULL;
@@ -100,7 +100,7 @@ BigInt *add_big_ints(BigInt *big_int1, BigInt *big_int2)
 		}
 		printf("sum_temp_num %d\n", sum_temp->number );
 		sum_temp->size = size;
-		printf("wtf %d, %d\n",i, carry);
+		printf("wtf i =%d, carry=%d\n",i, carry);
 		//printf("tail 1%d tail2%d\n", big_int1->tail->number, big_int2->tail->number);
 		if (big_int1->tail == NULL && big_int2->tail == NULL)
 		{
@@ -108,10 +108,12 @@ BigInt *add_big_ints(BigInt *big_int1, BigInt *big_int2)
 			{
 				sum_temp->tail = sum_tail;
 				sum = sum_temp;
-				printf("st\n");
+				size = i+1;
+				printf("tails Null, carry=0\n");
 				break;
 			} else if (carry == 1)
 			{
+				size = i+2;
 				BigInt *sum_temp2 = malloc(sizeof(BigInt));
 				sum_temp->tail = sum_tail;
 				sum_temp2->number = 1;
@@ -142,19 +144,18 @@ BigInt *add_big_ints(BigInt *big_int1, BigInt *big_int2)
 		sum_tail = sum_temp;
 
 	}
-	size++;
+
 	printf("stuff %d\n", size);
 
 	//To keep it ordered while adding size... 
 	BigInt *temp = malloc(sizeof(BigInt));
 	temp = sum;
 	for(int i = 0; i < size; i++) {
-		printf("%d",sum->number );
-
-		if (sum->tail == NULL)
-			break;
-		sum = sum->tail;
+		//printf("%d",sum->number );
 		sum->size = size;
+		if (sum->tail != NULL)
+			sum = sum->tail;
+		
 
 	}
 	//free(big_int1);
@@ -173,7 +174,9 @@ BigInt *reverse_BigInt(BigInt *big_int)
 		BigInt *temp_big_int = malloc(sizeof(BigInt));
 		temp_big_int->number = big_int->number;
 		temp_big_int->size = big_int->size;
-		big_int = big_int->tail;
+		if (big_int->tail != NULL)
+			big_int = big_int->tail;
+		
 		if (i == 0)
 			temp_big_int->tail = NULL;
 		else
@@ -203,6 +206,72 @@ void init_array_with_null(char array[])
 
 }
 
+void print_number(BigInt *number)
+{
+	BigInt *temp_sum = malloc(sizeof(BigInt));
+	temp_sum = number;
+	int size = number->size;
+	for(int i = 0; i < size; i++) {
+		printf("%d",temp_sum->number);
+		if (temp_sum->tail != NULL)
+			temp_sum = temp_sum->tail;
+		
+	}
+}
+
+void print_sum_of(BigInt *big_int_input1, BigInt *big_int_input2, BigInt *sum)
+{
+	printf("Summan av ");
+	print_number(big_int_input1);
+	printf(" och ");
+	print_number(big_int_input2);
+	printf(" blir ");
+	print_number(sum);
+	printf("\n");
+}
+
+void handle_user_input_int(char str_buf[], char prompt[])
+{
+
+	int i;
+	printf("%s\n",prompt);
+	while(1)
+	{
+	if (fgets(str_buf, sizeof(str_buf), stdin)) {
+    	if (1 == sscanf(str_buf, "%d", &i)) {
+         	break;
+    	} else {
+    		printf("Fel! Försök igen!\n");
+    	}
+	}
+}
+}
+void handle_user_input_string(char str_buf[], char prompt[])
+{
+
+	int i;
+	printf("%s\n",prompt);
+	while(1)
+	{
+	if (fgets(str_buf, sizeof(str_buf), stdin)) {
+    	if (1 == sscanf(str_buf, "%s", &i)) {
+         	break;
+    	} else {
+    		printf("Fel! Försök igen!\n");
+    	}
+	}
+}
+}
+void save_to_file(BigInt *sum)
+{
+	char str_buf[MAX_SIZE];
+	handle_user_input_string(str_buf, "Ange filnamn: ");
+
+	FILE *file;
+	file = fopen(str_buf, "w");
+	fprintf(file, "some text %s\n", str_buf);
+	fclose(file);
+}
 int main()
 {
 	
@@ -211,8 +280,8 @@ int main()
 	char str_buf2[MAX_SIZE];
 	init_array_with_null(str_buf2);
 
-	printf("Summera stora tal:\nAnge tal 1:");
-	scanf("%s", &str_buf);
+	printf(" Hej och välkommen! \n Detta program summerar stora positiva heltal som kan bestå av max 500 siffror.");
+	/*scanf("%s", &str_buf);
 	printf("Tal två:");
 	scanf("%s", &str_buf2);
 	BigInt *big_int = malloc(sizeof(BigInt));
@@ -220,19 +289,48 @@ int main()
 	BigInt *big_int2 = malloc(sizeof(BigInt));
 	create_big_int(big_int2, str_buf2);
 	//printf("%d doo %d\n",big_int2->size, big_int2->number );
-	big_int = reverse_BigInt(big_int);
-	big_int2 = reverse_BigInt(big_int2);
+	BigInt *big_int_rev = malloc(sizeof(BigInt));
+	BigInt *big_int_rev2 = malloc(sizeof(BigInt));
+	big_int_rev = reverse_BigInt(big_int);
+	big_int_rev2 = reverse_BigInt(big_int2);
 	//printf("BS%d\n", big_int->size);
 	BigInt *sum; 
 	BigInt *sum1 = malloc(sizeof(BigInt));
-	/*while (big_int->tail != NULL)
+
+	printf("%s\n",str_buf);	
+	sum = add_big_ints(big_int_rev, big_int_rev2);
+	print_sum_of(big_int, big_int2, sum);
+	*/
+	BigInt *big_int1 = malloc(sizeof(BigInt));
+	BigInt *big_int2 = malloc(sizeof(BigInt));
+	BigInt *big_int_rev1 = malloc(sizeof(BigInt));
+	BigInt *big_int_rev2 = malloc(sizeof(BigInt));
+	BigInt *sum = malloc(sizeof(BigInt));
+	int count = 0;
+	//save_to_file(sum);
+	while (1)
 	{
-		printf("%d\n",big_int->number );
-		big_int = big_int->tail;
-	}*/
-	sum = add_big_ints(big_int, big_int2);
-	//sum = reverse_BigInt(sum);
-	//sum = add_big_ints(sum, big_int);
+		if (count == 0)
+		{
+			handle_user_input_int(str_buf, "Ange ett tal: ");
+			printf("str_buf1=%s\n", str_buf );
+			create_big_int(big_int1, str_buf);
+			big_int_rev1 = reverse_BigInt(big_int1);
+
+		}
+		handle_user_input_int(str_buf2, "Ange ett annat tal:");
+		printf("str_buf2=%s\n", str_buf2);
+		if (str_buf2[0] == 'a')
+		{	
+			save_to_file(sum);
+		}
+		create_big_int(big_int2, str_buf);
+		big_int_rev2 = reverse_BigInt(big_int2);
+		sum = add_big_ints(big_int_rev1, big_int_rev2);
+		print_sum_of(big_int1, big_int2, sum);
+	}
+//	sum = reverse_BigInt(sum);
+//	sum = add_big_ints(sum, big_int);
 	printf("Back %d, %d\n", sum->size, sum->number);
 
 }
