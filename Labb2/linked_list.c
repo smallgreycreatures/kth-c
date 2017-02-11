@@ -54,6 +54,7 @@ BigInt *add_big_ints(BigInt *big_int1, BigInt *big_int2)
 	int num1 = 0;
 	int num2 = 0;
 	int sum_int = 0;
+	int null_flag = 0;
 	BigInt *sum = malloc(sizeof(BigInt));
 	BigInt *sum_tail = malloc(sizeof(BigInt));
 	int size = 0;
@@ -66,24 +67,17 @@ BigInt *add_big_ints(BigInt *big_int1, BigInt *big_int2)
 	for (int i = 0; i < size; i++)
 	{
 		BigInt *sum_temp = malloc(sizeof(BigInt));
-		if (big_int1 ==NULL)
+
+		if (null_flag == 1)
 		{	
 			num1 = 0;
 			num2 = big_int2->number;
 		}
-		else if (big_int2 == NULL)
+		else if (null_flag == 2)
 		{
+			printf("Big int 2 == NULL\n");
 			num2 =0;
 			num1 = big_int1->number;
-		}
-		else if (i == size-1)
-		{
-			printf("insdfs\n");
-			BigInt *sum_temp = malloc(sizeof(BigInt));
-			sum_temp->number = carry;
-			sum_temp->tail = sum_tail;
-			sum = sum_temp;
-			free(sum_temp);
 		}
 		else
 		{
@@ -92,7 +86,8 @@ BigInt *add_big_ints(BigInt *big_int1, BigInt *big_int2)
 		}
 
 		sum_int = num1+num2+carry;
-		printf("in %d\n",sum_int );
+		printf("in %d\n",num2 );
+		printf("sum int%d\n",sum_int );
 		if(sum_int >= 10)
 		{
 			carry = 1;
@@ -101,31 +96,70 @@ BigInt *add_big_ints(BigInt *big_int1, BigInt *big_int2)
 		{
 			carry = 0;
 			sum_temp->number = sum_int;
-			printf("%d\n",sum_temp->number );
+			//printf("%d\n",sum_temp->number );
 		}
+		printf("sum_temp_num %d\n", sum_temp->number );
+		sum_temp->size = size;
+		printf("wtf %d, %d\n",i, carry);
+		//printf("tail 1%d tail2%d\n", big_int1->tail->number, big_int2->tail->number);
+		if (big_int1->tail == NULL && big_int2->tail == NULL)
+		{
+			if (carry == 0)
+			{
+				sum_temp->tail = sum_tail;
+				sum = sum_temp;
+				printf("st\n");
+				break;
+			} else if (carry == 1)
+			{
+				BigInt *sum_temp2 = malloc(sizeof(BigInt));
+				sum_temp->tail = sum_tail;
+				sum_temp2->number = 1;
+				sum_temp2->size = size;
+				sum_temp2->tail = sum_temp;
+				sum = sum_temp2;
+				break;
+			}
+		} else if (big_int1->tail == NULL)
+		{
+			big_int2 = big_int2->tail;
+			null_flag = 1;
 
-		big_int1 = big_int1->tail;
-		big_int2 = big_int2->tail;
-		
+		} else if (big_int2->tail == NULL)
+		{
+			printf("doo\n");
+			big_int1 = big_int1->tail;
+			null_flag = 2;
+
+		} else {
+			big_int1 = big_int1->tail;
+			big_int2 = big_int2->tail;
+		}
 		if (i == 0)
-		{
-			sum_temp->tail = NULL;
-		}
-	 else
-		{
+			sum_temp->tail == NULL;
+		else	
 			sum_temp->tail = sum_tail;
-		}
-		printf("DODO\n");
 		sum_tail = sum_temp;
-	}
-	printf("stuff\n");
-	for(int i = 0; i < size +1 +carry; i++) {
-		printf("%d",sum->number );
-		sum = sum->tail;
-	}
-	free(big_int1);
-	free(big_int2);
 
+	}
+	size++;
+	printf("stuff %d\n", size);
+
+	//To keep it ordered while adding size... 
+	BigInt *temp = malloc(sizeof(BigInt));
+	temp = sum;
+	for(int i = 0; i < size; i++) {
+		printf("%d",sum->number );
+
+		if (sum->tail == NULL)
+			break;
+		sum = sum->tail;
+		sum->size = size;
+
+	}
+	//free(big_int1);
+	free(big_int2);
+	sum = temp;
 	return sum;
 }
 
@@ -133,22 +167,27 @@ BigInt *reverse_BigInt(BigInt *big_int)
 {
 	BigInt *reversed_big_int = malloc(sizeof(BigInt));
 	printf("str %d\n", big_int->size);
-	for (int i = 0; i < big_int->size; i++)
+	int size = big_int->size;
+	for (int i = 0; i < size; i++)
 	{
 		BigInt *temp_big_int = malloc(sizeof(BigInt));
 		temp_big_int->number = big_int->number;
 		temp_big_int->size = big_int->size;
 		big_int = big_int->tail;
-		temp_big_int->tail = reversed_big_int;
+		if (i == 0)
+			temp_big_int->tail = NULL;
+		else
+			temp_big_int->tail = reversed_big_int;
+		
 		reversed_big_int = temp_big_int;
 		
 
-		//printf("%d\n", temp_big_int->number);
+		printf("%d\n", temp_big_int->number);
 		//printf("%d\n", temp_big_int->size);
 	}
 
 	/*for(int i = 0; i < big_int->size; i++) {
-		printf("%d",reversed_big_int->number );
+		printf("rev :%d",reversed_big_int->number );
 		reversed_big_int = reversed_big_int->tail;
 	}*/
 	return reversed_big_int;
@@ -186,11 +225,14 @@ int main()
 	//printf("BS%d\n", big_int->size);
 	BigInt *sum; 
 	BigInt *sum1 = malloc(sizeof(BigInt));
-	sum = add_big_ints(big_int, big_int2);
-
-	/*while (sum->tail != NULL)
+	/*while (big_int->tail != NULL)
 	{
-		printf("%d\n",sum->number );
-		big_int = sum->tail;
+		printf("%d\n",big_int->number );
+		big_int = big_int->tail;
 	}*/
+	sum = add_big_ints(big_int, big_int2);
+	//sum = reverse_BigInt(sum);
+	//sum = add_big_ints(sum, big_int);
+	printf("Back %d, %d\n", sum->size, sum->number);
+
 }
