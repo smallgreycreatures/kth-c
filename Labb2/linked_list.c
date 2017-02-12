@@ -147,7 +147,7 @@ BigInt *add_big_ints(BigInt *big_int1, BigInt *big_int2)
 		}
 
 		if (i == 0)
-			sum_temp->tail == NULL;
+			sum_temp->tail = NULL;
 		else	
 			sum_temp->tail = sum_tail;
 		

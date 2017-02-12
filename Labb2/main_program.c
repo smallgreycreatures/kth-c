@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "linked_list.h"
+#include <string.h>
 const int MAX_SIZE = 500;
 
 #define NULL_INT '\0' //defining a null value macro for ints :)
@@ -76,6 +77,7 @@ int main()
 	BigInt *big_int_rev1 = malloc(sizeof(BigInt));
 	BigInt *big_int_rev2 = malloc(sizeof(BigInt));
 	BigInt *sum = malloc(sizeof(BigInt));
+
 	int count = 0;
 	while (1)
 	{
@@ -87,7 +89,7 @@ int main()
 			//printf("Buffer %s\n",buffer );
 			create_big_int(big_int1, str_buf1);
 			big_int_rev1 = reverse_BigInt(big_int1);
-			
+
 			
 		}
 		sum = big_int1;

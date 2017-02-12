@@ -12,7 +12,7 @@ struct BigInt {
 	struct BigInt *tail;
 
 };
-
+void create_big_int(BigInt *big_int, char str_buf[]);
 BigInt *add_big_ints(BigInt *big_int1, BigInt *big_int2);
 BigInt *reverse_BigInt(BigInt *big_int);
 void print_number(BigInt *number);
