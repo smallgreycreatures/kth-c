@@ -27,7 +27,10 @@ void handle_user_input(char str_buf[], char prompt[])
 		} 
 		else 
 		{
-			printf("Fel, försök igen\n");
+			str_buf[0] = EOF;
+			fseek(stdin,0,SEEK_END);
+			break;
+			
 		}
 	}
 }
@@ -37,7 +40,7 @@ void handle_user_input(char str_buf[], char prompt[])
 void save_to_file(BigInt *sum)
 {
 	char str_buf[MAX_SIZE];
-	handle_user_input(str_buf, "Ange filnamn: ");
+	handle_user_input(str_buf, "\nAnge filnamn: ");
 
 	BigInt *temp_sum = malloc(sizeof(BigInt));
 	temp_sum = sum; //temp var to enable printing of sum later...
@@ -87,8 +90,8 @@ int main()
 			
 			
 		}
-
-		handle_user_input(str_buf2, "Ange ett annat tal: ");
+		sum = big_int1;
+		handle_user_input(str_buf2, "Ange ett annat tal (eller avsluta genom crtl-d): ");
 		//printf("str_buf2=%s\n", str_buf2);
 		
 		if (str_buf2[0] == EOF)
@@ -96,6 +99,7 @@ int main()
 
 			save_to_file(sum);
 			printf("Tack och hej!\n");
+			break;
 		}
 		create_big_int(big_int2, str_buf2);
 		big_int_rev2 = reverse_BigInt(big_int2);
