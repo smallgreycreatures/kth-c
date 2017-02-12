@@ -17,7 +17,7 @@ void init_array_with_null(char array[])
 void handle_user_input(char str_buf[], char prompt[])
 {
 
-	printf("%s\n",prompt);
+	printf("%s",prompt);
 	int i;
 	while(1)
 	{
@@ -88,7 +88,7 @@ int main()
 			
 		}
 
-		handle_user_input(str_buf2, "Ange ett annat tal:");
+		handle_user_input(str_buf2, "Ange ett annat tal: ");
 		//printf("str_buf2=%s\n", str_buf2);
 		
 		if (str_buf2[0] == EOF)
