@@ -9,13 +9,14 @@ struct BigInt {
 };
 const int MAX_SIZE = 500;
 typedef struct BigInt BigInt;
+#define NULL_INT '\0' //defining a null value macro for ints :)
 
 void create_big_int(BigInt *big_int, char str_buf[])
 {
 	int size = 0;
 	while(1) //Calculate the size of the number.
 	{
-		if (str_buf[size] == NULL)
+		if (str_buf[size] == NULL_INT)
 			break;
 		size+=1;
 
@@ -33,7 +34,7 @@ void create_big_int(BigInt *big_int, char str_buf[])
 		big_int_temp->tail = big_int_tail;
 		//printf("a%d\n", big_int_temp->number);
 
-		if (str_buf[i+1] == 10 || str_buf[i] == NULL) //Exit when damn backspace appears or when list is NULL
+		if (str_buf[i+1] == 10 || str_buf[i] == NULL_INT) //Exit when damn backspace appears or when list is NULL
 		{	
 			big_int_tail = NULL;
 			break;
@@ -66,7 +67,7 @@ BigInt *add_big_ints(BigInt *big_int1, BigInt *big_int2)
 		size = big_int1->size +1;
 	else
 		size = big_int2->size +1;
-	printf("size =%d\n", size);
+	//printf("size =%d\n", size);
 	for (int i = 0; i < size; i++)
 	{
 		BigInt *sum_temp = malloc(sizeof(BigInt));
@@ -79,7 +80,7 @@ BigInt *add_big_ints(BigInt *big_int1, BigInt *big_int2)
 		}
 		else if (null_flag == 2)
 		{
-			printf("Big int 2 == NULL\n");
+			//printf("Big int 2 == NULL\n");
 			num2 =0;
 			num1 = big_int1->number;
 		}
@@ -90,8 +91,8 @@ BigInt *add_big_ints(BigInt *big_int1, BigInt *big_int2)
 		}
 
 		sum_int = num1+num2+carry;
-		printf("in %d\n",num2 );
-		printf("sum int%d\n",sum_int );
+		//printf("in %d\n",num2 );
+		//printf("sum int%d\n",sum_int );
 
 		if(sum_int >= 10) //Fixa en carry om sum >=10
 		{
@@ -104,9 +105,9 @@ BigInt *add_big_ints(BigInt *big_int1, BigInt *big_int2)
 			sum_temp->number = sum_int;
 			//printf("%d\n",sum_temp->number );
 		}
-		printf("sum_temp_num %d\n", sum_temp->number );
+		//printf("sum_temp_num %d\n", sum_temp->number );
 		sum_temp->size = 0; //We don't know size in advande because of carries.
-		printf("wtf i =%d, carry=%d\n",i, carry);
+		//printf("wtf i =%d, carry=%d\n",i, carry);
 		//printf("tail 1%d tail2%d\n", big_int1->tail->number, big_int2->tail->number);
 		
 		//Are next elements both NULL, then we stop.
@@ -117,7 +118,7 @@ BigInt *add_big_ints(BigInt *big_int1, BigInt *big_int2)
 				sum_temp->tail = sum_tail;
 				sum = sum_temp;
 				size = i+1; //Sets the final size var
-				printf("tails Null, carry=0\n");
+				//printf("tails Null, carry=0\n");
 				break;
 			} 
 			else if (carry == 1)
@@ -160,7 +161,7 @@ BigInt *add_big_ints(BigInt *big_int1, BigInt *big_int2)
 
 	}
 	free(sum_tail);
-	printf("stuff %d\n", size);
+	//printf("stuff %d\n", size);
 
 	//To keep it ordered while adding size... 
 	BigInt *temp = malloc(sizeof(BigInt));
@@ -184,7 +185,7 @@ BigInt *reverse_BigInt(BigInt *big_int)
 {
 	//Reverse big ints to make addition easier.
 	BigInt *reversed_big_int = malloc(sizeof(BigInt));
-	printf("str %d\n", big_int->size);
+	//printf("str %d\n", big_int->size);
 	int size = big_int->size;
 	for (int i = 0; i < size; i++)
 	{
@@ -208,7 +209,7 @@ BigInt *reverse_BigInt(BigInt *big_int)
 		reversed_big_int = temp_big_int;
 		
 
-		printf("%d\n", temp_big_int->number);
+		//printf("%d\n", temp_big_int->number);
 		//printf("%d\n", temp_big_int->size);
 	}
 
@@ -224,7 +225,7 @@ void init_array_with_null(char array[])
 	//Arrays are not null filled in c. Null filling it makes life easier.
 	for (int i = 0; i < MAX_SIZE; i++)
 	{
-		array[i] = 0;
+		array[i] = NULL_INT;
 	}
 
 }
@@ -240,7 +241,7 @@ void print_number(BigInt *number)
 			temp_sum = temp_sum->tail;
 		
 	}
-	free(temp_sum);
+	//free(temp_sum);
 }
 
 void print_sum_of(BigInt *big_int_input1, BigInt *big_int_input2, BigInt *sum)
@@ -262,7 +263,7 @@ void handle_user_input(char str_buf[], char prompt[])
 	while(1)
 	{
 		if (fgets(str_buf, MAX_SIZE, stdin)) {
-
+			str_buf[strcspn(str_buf, "\n")] = NULL_INT; //Set the trailing newline to NULL!
  			break;
 		} 
 		else 
@@ -272,19 +273,35 @@ void handle_user_input(char str_buf[], char prompt[])
 	}
 }
 
+
+
 void save_to_file(BigInt *sum)
 {
 	char str_buf[MAX_SIZE];
 	handle_user_input(str_buf, "Ange filnamn: ");
 
+	BigInt *temp_sum = malloc(sizeof(BigInt));
+	temp_sum = sum; //temp var to enable printing of sum later...
 	FILE *file;
 	file = fopen(str_buf, "w");
-	fprintf(file, "some text %s\n", str_buf);
+	int size = sum->size;
+	for (int i = 0; i < size; i++)
+	{
+		fprintf(file, "%d",temp_sum->number);
+		if (temp_sum->tail != NULL)
+			temp_sum = temp_sum->tail;
+		
+	}
+	printf("Talet ");
+	print_number(sum);
+	printf(" är nu sparat i filen %s\n", str_buf);
 	fclose(file);
+	free(temp_sum);
 }
+
+
 int main()
 {
-	
 	char str_buf1[MAX_SIZE];
 	init_array_with_null(str_buf1);
 	char str_buf2[MAX_SIZE];
@@ -298,16 +315,12 @@ int main()
 	BigInt *big_int_rev2 = malloc(sizeof(BigInt));
 	BigInt *sum = malloc(sizeof(BigInt));
 	int count = 0;
-	//save_to_file(sum);
 	while (1)
 	{
 		if (count == 0)
 		{
 			handle_user_input(str_buf1, "Ange ett tal: ");
-			//scanf("%s",&str_buf1);
-			printf("str_buf1=%s\n", str_buf1 );
-			//char buffer[strlen(str_buf)];
-			//memcpy(buffer, str_buf, strlen(str_buf));
+			//printf("str_buf1=%s\n", str_buf1 );
 
 			//printf("Buffer %s\n",buffer );
 			create_big_int(big_int1, str_buf1);
@@ -317,15 +330,13 @@ int main()
 		}
 
 		handle_user_input(str_buf2, "Ange ett annat tal:");
-		//printf("Ange ett annat tal:");
-		//scanf("%s", &str_buf2);
-		printf("str_buf2=%s\n", str_buf2);
+		//printf("str_buf2=%s\n", str_buf2);
 		
 		if (str_buf2[0] == EOF)
 		{	
 
 			save_to_file(sum);
-			//break;
+			printf("Tack och hej!\n");
 		}
 		create_big_int(big_int2, str_buf2);
 		big_int_rev2 = reverse_BigInt(big_int2);
@@ -333,10 +344,10 @@ int main()
 		print_sum_of(big_int1, big_int2, sum);
 		count++;
 		big_int1 = sum; //next iteration we work with sum
+		
 		big_int_rev1 = reverse_BigInt(sum);
 	}
-//	sum = reverse_BigInt(sum);
-//	sum = add_big_ints(sum, big_int);
-	printf("Back %d, %d\n", sum->size, sum->number);
+
+	//printf("Back %d, %d\n", sum->size, sum->number);
 	return 0;
 }
