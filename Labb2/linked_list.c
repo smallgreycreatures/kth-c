@@ -5,8 +5,44 @@
 
 #define NULL_INT '\0' //defining a null value macro for ints :)
 
+void free_BigInt(BigInt *big_int)
+{
+	int count = 0;
+	BigInt *temp;
+	int size = big_int->size;
+	if (size == 1)
+	{	free(big_int);
+		count++;
+		return;
+	}
+
+	for (int i = 0; i < size; i++)
+	{
+		//printf("wtf? %d\n", big_int->number);
+		if (i != 0)
+		{
+			free(temp);
+			count++;
+		}
+		if (i == size-1)
+		{
+			count++;
+			//free(big_int->tail);
+			free(big_int);
+
+		}
+		else
+		{
+			temp = big_int;
+			big_int = big_int->tail;
+		}
+	}
+	printf("Free %d\n", count);
+}
+
 void create_big_int(BigInt *big_int, char str_buf[])
 {
+	int count =0;
 	int size = 0;
 	while(1) //Calculate the size of the number.
 	{
@@ -15,26 +51,23 @@ void create_big_int(BigInt *big_int, char str_buf[])
 		size+=1;
 
 	}
-	if (str_buf[size-1] == 10)
-		size--; //We have a damn backspace ASCII code 10 following us around. WTF?!? Calc size with it and then throw it away.
-	
+
 	BigInt *big_int_temp = big_int;
-	for (int i = 0; i < 500; i++)
+	for (int i = 0; i < size; i++)
 	{
 
 		big_int_temp->number = (str_buf[i]-'0'); //Convert ascii value to int
 		big_int_temp->size = size;
+		count++;
 		BigInt *big_int_tail = malloc(sizeof(BigInt));
 		big_int_temp->tail = big_int_tail;
 		//printf("a%d\n", big_int_temp->number);
 
-		if (str_buf[i+1] == 10 || str_buf[i] == NULL_INT) //Exit when damn backspace appears or when list is NULL
-		{	
-			big_int_tail = NULL;
-			break;
-		}
-		else if (i == 0)
+		if (i == size-1)
+			free(big_int_tail);
+		if (i == 0)
 		{
+
 			big_int_temp = big_int_tail;
 
 		}
@@ -43,19 +76,21 @@ void create_big_int(BigInt *big_int, char str_buf[])
 			big_int = big_int_temp;
 		} 
 	}
-	free(big_int_temp);
+	printf("Malloc %d\n",count);
+	//free(big_int_temp);
 
 }
 
 BigInt *add_big_ints(BigInt *big_int1, BigInt *big_int2)
 {
+	int count = 0;
 	int carry = 0;
 	int num1 = 0;
 	int num2 = 0;
 	int sum_int = 0;
 	int null_flag = 0;
-	BigInt *sum = malloc(sizeof(BigInt));
-	BigInt *sum_tail = malloc(sizeof(BigInt));
+	BigInt *sum;
+	BigInt *sum_tail;
 	int size = 0;
 	if (big_int1->size >=big_int2->size)
 		size = big_int1->size +1;
@@ -65,7 +100,7 @@ BigInt *add_big_ints(BigInt *big_int1, BigInt *big_int2)
 	for (int i = 0; i < size; i++)
 	{
 		BigInt *sum_temp = malloc(sizeof(BigInt));
-
+		count++;
 		//Vi kollar flaggan. Om den är satt så är det ena talet slut och vi adderar med 0
 		if (null_flag == 1)
 		{	
@@ -118,8 +153,8 @@ BigInt *add_big_ints(BigInt *big_int1, BigInt *big_int2)
 			else if (carry == 1)
 			{
 				size = i+2; //sets the final size var.
-				BigInt *sum_temp2 = malloc(sizeof(BigInt));
-				//set the carry as the first element!
+				BigInt *sum_temp2 = malloc(sizeof(BigInt));  //set the carry as the first element!
+				count++;
 				sum_temp->tail = sum_tail;
 				sum_temp2->number = 1;
 				sum_temp2->size = size;
@@ -154,12 +189,11 @@ BigInt *add_big_ints(BigInt *big_int1, BigInt *big_int2)
 		sum_tail = sum_temp;
 
 	}
-	free(sum_tail);
+	//free(sum_tail);
 	//printf("stuff %d\n", size);
-
+	printf("Malloc %d\n",count);
 	//To keep it ordered while adding size... 
-	BigInt *temp = malloc(sizeof(BigInt));
-	temp = sum;
+	BigInt *temp = sum;
 	//Add size to all list items.
 	for(int i = 0; i < size; i++) {
 		//printf("%d",sum->number );
@@ -171,14 +205,14 @@ BigInt *add_big_ints(BigInt *big_int1, BigInt *big_int2)
 	}
 
 	sum = temp;
-	free(temp);
 	return sum;
 }
 
 BigInt *reverse_BigInt(BigInt *big_int)
 {
+	int count =0;
 	//Reverse big ints to make addition easier.
-	BigInt *reversed_big_int = malloc(sizeof(BigInt));
+	BigInt *reversed_big_int;
 	//printf("str %d\n", big_int->size);
 	int size = big_int->size;
 	for (int i = 0; i < size; i++)
@@ -189,14 +223,19 @@ BigInt *reverse_BigInt(BigInt *big_int)
 		haver as tail (ooyeah, english language, my favorite :))
 		*/
 		BigInt *temp_big_int = malloc(sizeof(BigInt));
+		count++;
 		temp_big_int->number = big_int->number;
 		temp_big_int->size = big_int->size;
 		
+
 		if (big_int->tail != NULL)
 			big_int = big_int->tail;
 		
 		if (i == 0)
+		{
 			temp_big_int->tail = NULL;
+
+		}
 		else
 			temp_big_int->tail = reversed_big_int;
 		
@@ -211,6 +250,7 @@ BigInt *reverse_BigInt(BigInt *big_int)
 		printf("rev :%d",reversed_big_int->number );
 		reversed_big_int = reversed_big_int->tail;
 	}*/
+	printf("Malloc %d\n",count);
 	return reversed_big_int;
 
 }
@@ -218,7 +258,7 @@ BigInt *reverse_BigInt(BigInt *big_int)
 
 void print_number(BigInt *number)
 {
-	BigInt *temp_sum = malloc(sizeof(BigInt));
+	BigInt *temp_sum;
 	temp_sum = number;
 	int size = number->size;
 	for(int i = 0; i < size; i++) {
@@ -227,7 +267,7 @@ void print_number(BigInt *number)
 			temp_sum = temp_sum->tail;
 		
 	}
-	//free(temp_sum);
+
 }
 
 void print_sum_of(BigInt *big_int_input1, BigInt *big_int_input2, BigInt *sum)

@@ -43,7 +43,7 @@ void save_to_file(BigInt *sum)
 	char str_buf[MAX_SIZE];
 	handle_user_input(str_buf, "\nAnge filnamn: ");
 
-	BigInt *temp_sum = malloc(sizeof(BigInt));
+	BigInt *temp_sum;
 	temp_sum = sum; //temp var to enable printing of sum later...
 	FILE *file;
 	file = fopen(str_buf, "w");
@@ -59,7 +59,6 @@ void save_to_file(BigInt *sum)
 	print_number(sum);
 	printf(" är nu sparat i filen %s\n", str_buf);
 	fclose(file);
-	free(temp_sum);
 }
 
 
@@ -73,10 +72,10 @@ int main()
 	printf(" Hej och välkommen! \n Detta program summerar stora positiva heltal som kan bestå av max 500 siffror.\n");
 
 	BigInt *big_int1 = malloc(sizeof(BigInt));
-	BigInt *big_int2 = malloc(sizeof(BigInt));
-	BigInt *big_int_rev1 = malloc(sizeof(BigInt));
-	BigInt *big_int_rev2 = malloc(sizeof(BigInt));
-	BigInt *sum = malloc(sizeof(BigInt));
+	BigInt *big_int2;
+	BigInt *big_int_rev1;
+	BigInt *big_int_rev2;
+	BigInt *sum;
 
 	int count = 0;
 	while (1)
@@ -100,17 +99,27 @@ int main()
 		{	
 
 			save_to_file(sum);
+			free_BigInt(sum);
+			free_BigInt(big_int_rev1);
 			printf("Tack och hej!\n");
 			break;
 		}
+		big_int2 = malloc(sizeof(BigInt));
 		create_big_int(big_int2, str_buf2);
 		big_int_rev2 = reverse_BigInt(big_int2);
 		sum = add_big_ints(big_int_rev1, big_int_rev2);
 		print_sum_of(big_int1, big_int2, sum);
 		count++;
+		//printf("Big int1 before = %d %d\n", big_int1->number, big_int1->tail->number);
+		free_BigInt(big_int1);
+		free_BigInt(big_int2);
+		free_BigInt(big_int_rev1);
+		free_BigInt(big_int_rev2);
 		big_int1 = sum; //next iteration we work with sum
-		
+
+		//printf("Big int1 after = %d %d\n", big_int1->number, big_int1->tail->number);
 		big_int_rev1 = reverse_BigInt(sum);
+
 	}
 
 	//printf("Back %d, %d\n", sum->size, sum->number);
